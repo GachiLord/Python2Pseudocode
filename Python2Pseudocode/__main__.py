@@ -9,7 +9,7 @@ def main():
     args = sys.argv[1::]
 
     try:
-        f = open(args[0], 'r')
+        f = open(args[0], 'r', encoding='utf-8')
     except:
         exit('wrong path')
 

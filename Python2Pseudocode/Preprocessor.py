@@ -17,13 +17,26 @@ class Preprocessor:
     _parsed_code = []
 
     def get_serealized_code(self):
+        #public wrap
         return self._get_serealized_code(self._parsed_code)
 
     def _parse(self) -> None:
+        #split file by '\n'
         for i in self._file:
-            if i.strip() != '\n' and '#' not in i and i != '\n' and i !='': self._parsed_code.append(i)
+            if i.strip() != '\n' and '#' not in i and i != '\n' and i !='':
+                #sinlge-line to many
+                if self._is_control_structure(i) and i.strip()[-1] != ':':
+                    body = i.strip().split(':')[1]
+                    self._parsed_code.append(i.replace(body, ''))
+                    body = self._set_level_of_line(body, self._get_level_of_line(i)+1)
+                    self._parsed_code.append(body)
+                else:
+                    self._parsed_code.append(i)
+            else:
+                self._parsed_code.append(i)
 
     def _get_serealized_code(self, code):
+        #creates dict of code like {'if n == 1:': ['n+=2',print(n)']}
         levels = []
         i = 0
 
@@ -53,6 +66,7 @@ class Preprocessor:
         return end
         
     def _get_body(self, pos):
+        #it works badly, needs to be fixed
         last_level = self._get_level_of_line(self._parsed_code[pos])
         body = []
 
@@ -69,23 +83,37 @@ class Preprocessor:
         level = self._get_level_of_line(line)
         return line.replace('    ' * level, '    ' * (level+increase))
 
+    def _set_level_of_line(self, line, level) -> str:
+        line = line.strip()
+        return '    ' * level + line
+
     def find_all_veribles(self, code = []) -> list:
         if code == []: code = self._parsed_code
         m = []
 
+        #find ver statements
         for str in code:
-            if str.strip() != 'True' and str.strip() != 'False':
-                m += re.findall(r'(\w+)\.? ?= ?', str)
-                m += re.findall(r'for (\w+)\.?', str)
-                m += re.findall(r'while (\w+)\.?', str)
-                m += re.findall(r'for (\w+)', str)
-                m += re.findall(r'in +(\w+)\.?',str)
-                if '(' in str:
-                    m += re.findall(r'[a-zA-Z_]+', str[str.index('(')+1:str.index(')')])
-
+            m += re.findall(r'(\w+)\.? ?= ?', str)
+            m += re.findall(r'for (\w+)\.?', str)
+            m += re.findall(r'while (\w+)\.?', str)
+            m += re.findall(r'for (\w+)', str)
+            m += re.findall(r'in +(\w+)\.?',str)
+            if '(' in str:
+                m += re.findall(r'[a-zA-Z_0-9]+', str[str.index('(')+1:str.index(')')])
+        
+        m = list(set(m))
+        
+        #remove special words
+        if 'True' in m: m.remove('True')
+        if 'False' in m: m.remove('False')
         if 'and' in m: m.remove('and')
         if 'len' in m: m.remove('len')
-        return list(set(m))
+        if 'input' in m: m.remove('input')
+        if 'print' in m: m.remove('print')
+        if 'int' in m: m.remove('int')
+
+
+        return m
 
     def _functional_to_procedural(self) -> None:
         functions = {}
@@ -166,6 +194,7 @@ class Preprocessor:
         return new_code
 
     def _paste_in_parsed_code(self, pos, l):
+        #needs to be fixed
         self._parsed_code = self._parsed_code[0:pos] + l + self._parsed_code[pos+1::]
 
 

@@ -1,8 +1,8 @@
 from setuptools import setup
 
 setup(name='Python2Pseudocode',
-      version='0.5',
-      description='CLI-tool and Lib to translate python to c-styled pseudocode for code2flow site',
+      version='0.5.1',
+      description='CLI-tool for translating python to c-styled pseudocode for code2flow site',
       url='',
       author='GachiLord',
       author_email='name50525@gmail.com',

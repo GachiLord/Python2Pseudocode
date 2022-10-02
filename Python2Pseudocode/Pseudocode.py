@@ -4,9 +4,10 @@ import re
 class Pseudocode:
 
     def build(self, verible_list, py_tree) -> str:
-        return 'begin\n\n' + '/' + ','.join(verible_list) + '/\n\n' + self._py2pseudocode(py_tree) + '\nend'
+        return 'begin;\n\n' + '/' + ','.join(verible_list) + '/;\n\n' + self._py2pseudocode(py_tree) + '\nend;'
     
     def _py2pseudocode(self, py_tree) -> str:
+        #add {} to bodies
         pseudocode = ''
         for i in py_tree:
             if type(i) == dict:
@@ -18,12 +19,25 @@ class Pseudocode:
         return pseudocode
 
     def _get_c_styled(self, line) -> str:
+        #clear type-changing operators, input, print 
+        line = line.replace('*', '×')
+        line = line.replace('/', ':')
+        line = re.sub('input ?\(.*?\)', '', line)
+        line = re.sub('print ?\((.*?)\)', '/\g<1>/', line)
+        line = re.sub('(int|float|str|bool|tuple|list|dict|set) ?\((.*?)\)', '\g<2>', line)
+        
+        #dont write line if it useless
+        if '=' in line:
+            sub_line = line[line.index('=')+1::]
+            if sub_line.count(' ') == len(sub_line): return ''
+
+        #control structs to c-style
         if line[0:2] == 'if':
             return 'if(' + re.sub(r'if |\:', '', line) + ')'
         elif line[0:4] == 'else':
-            return 'else(' + re.sub(r'else |\:', '', line) + ')'
+            return 'else'
         elif line[0:4] == 'elif':
-            return 'elif(' + re.sub(r'elif |\:', '', line) + ')'
+            return 'else if(' + re.sub(r'elif |\:', '', line) + ')'
         elif line[0:3] == 'for':
             return 'while(' + re.sub(r'for |\:', '', line) + ')'
         elif line[0:5] == 'while':
@@ -35,7 +49,7 @@ class Pseudocode:
                 return line
             else:
                 if line.strip() == '': return line
-                else: return f'|{line}|\n'
+                else: return f'{line};\n'
 
     def _get_dict_key_by_index(self, dict, index = 0) -> str:
         return list(dict.keys())[index]
