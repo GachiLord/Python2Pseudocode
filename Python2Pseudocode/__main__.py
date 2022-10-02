@@ -11,7 +11,10 @@ def main():
     try:
         f = open(args[0], 'r', encoding='utf-8')
     except:
-        exit('wrong path')
+        try:
+            f = open(input('path: '), 'r', encoding='utf-8')
+        except:
+            exit('wrong path')
 
     try:
         if args[1] == 'procedural': mode = Preprocessor.CONVERT_MODS['FUNCTIONAL_TO_PROCEDURAL']
