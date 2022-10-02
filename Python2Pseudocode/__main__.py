@@ -27,6 +27,7 @@ def main():
 
     serealized = p.get_serealized_code()
     clipboard.copy(pscode.build(p.find_all_veribles(), serealized))
+    f.close()
     print('Pseudocode has been copied')
 
 
