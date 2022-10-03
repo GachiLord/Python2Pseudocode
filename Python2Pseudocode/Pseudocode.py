@@ -21,15 +21,21 @@ class Pseudocode:
     def _get_c_styled(self, line) -> str:
         #clear type-changing operators, input, print 
         line = line.replace('*', '×')
-        line = line.replace('/', ':')
-        line = re.sub('input ?\(.*?\)', '', line)
-        line = re.sub('print ?\((.*?)\)', '/\g<1>/', line)
-        line = re.sub('(int|float|str|bool|tuple|list|dict|set) ?\((.*?)\)', '\g<2>', line)
+        line = line.replace('/', '÷')
+        line = re.sub('input ?\( ?.* ?\)', '', line)
+        line = re.sub('print ?\( ?(.*) ?\)', '/ \g<1> /', line)
+        line = re.sub('(int|float|str|bool|tuple|list|dict|set) ?\( ?(.*?) ?\)', '\g<2>', line) #IT MUST BE LAST!!!!
+        
         
         #dont write line if it useless
         if '=' in line:
             sub_line = line[line.index('=')+1::]
             if sub_line.count(' ') == len(sub_line): return ''
+
+        #escape special symbs
+        spec_symb = re.findall(r'(\[|\]|\{|\})', line)
+        for symb in spec_symb: line = line.replace(symb, '\\' + symb)
+
 
         #control structs to c-style
         if line[0:2] == 'if':

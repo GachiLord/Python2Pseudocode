@@ -10,22 +10,24 @@ print(num_sum/(len(num_list)-1))
 ```
 Converts to
 ```
-begin
+begin;
 
-/i,num_list,num_sum/
+/num_list,num_sum,i/;
 
-|num_list = [1,2,3]|
+num_list = \[1,2,3\];
 
-|num_sum = 0|
+num_sum = 0;
+
 
 while(i in num_list){
-|num_sum += i|
+num_sum += i;
 
 }
 
-|print(num_sum/(len(num_list)-1))|
+/ num_sum÷(len(num_list)-1) /;
 
-end
+
+end;
 ```
 By [code2flow](http://app.code2flow.com "code2flow") converts to
 ![](./converted.png)
