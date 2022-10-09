@@ -40,7 +40,7 @@ pip install -e .
 
 ## Usage
 
-To get pseudocode of file double-click on '\_\_main\_\_.py' or run it:
+To get pseudocode of file run 'portable_build.py' or run it:
 ```shell
 py2ps file_path
 ```
